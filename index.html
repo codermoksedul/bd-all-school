@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropdown Chain with Clickable Institute Links</title>
+  </head>
+
+  <body>
+    <style>
+      #dm_select_box {
+        border: 1px solid rgba(8, 8, 8, 0.137);
+        padding: 20px;
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 10px;
+      }
+      @media screen and (max-width: 992px) {
+        #dm_select_box {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+      @media screen and (max-width: 768px) {
+        #dm_select_box {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media screen and (max-width: 540px) {
+        #dm_select_box {
+          grid-template-columns: 1fr;
+        }
+      }
+      #dm_select_box select {
+        padding: 7px 10px;
+        font-size: 15px;
+        width: 100%;
+        border: 1px solid rgba(8, 8, 8, 0.137);
+        border-radius: 2px;
+        outline: none;
+      }
+    </style>
+    <div id="dm_select_box">
+      <select id="divisionDropdown">
+        <option value="">বিভাগ</option>
+      </select>
+
+      <select id="zilaDropdown" style="display: none"></select>
+
+      <select id="upazilaDropdown" style="display: none"></select>
+
+      <select id="instituteDropdown" style="display: none"></select>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const divisionDropdown = document.getElementById("divisionDropdown");
+        const zilaDropdown = document.getElementById("zilaDropdown");
+        const upazilaDropdown = document.getElementById("upazilaDropdown");
+        const instituteDropdown = document.getElementById("instituteDropdown");
+
+        // Fetch JSON data from your JSON file (dm-school-list-data.json)
+        fetch(
+          "https://raw.githubusercontent.com/dmoksedul/mydocuments/main/dm-school-list-data.json"
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            // Populate the Division dropdown
+            data.divisions.forEach((division) => {
+              const option = document.createElement("option");
+              option.value = division;
+              option.textContent = division;
+              divisionDropdown.appendChild(option);
+            });
+
+            divisionDropdown.addEventListener("change", function () {
+              // Hide all other dropdowns
+              zilaDropdown.style.display = "none";
+              upazilaDropdown.style.display = "none";
+              instituteDropdown.style.display = "none";
+
+              // Show the selected division's dropdown
+              const selectedDivision = this.value;
+              if (selectedDivision) {
+                // Filter zilas based on the selected division
+                const filteredZilas = data.zilas.filter(
+                  (zila) => zila.division === selectedDivision
+                );
+
+                // Populate the Zila dropdown
+                zilaDropdown.innerHTML = '<option value="">জেলা</option>';
+                filteredZilas.forEach((zila) => {
+                  const option = document.createElement("option");
+                  option.value = zila.name;
+                  option.textContent = zila.name;
+                  zilaDropdown.appendChild(option);
+                });
+                zilaDropdown.style.display = "block";
+              }
+            });
+
+            zilaDropdown.addEventListener("change", function () {
+              // Hide all other dropdowns
+              upazilaDropdown.style.display = "none";
+              instituteDropdown.style.display = "none";
+
+              // Show the selected zila's dropdown
+              const selectedZila = this.value;
+              if (selectedZila) {
+                // Filter upazilas based on the selected zila
+                const filteredUpazilas = data.upazilas.filter(
+                  (upazila) => upazila.zila === selectedZila
+                );
+
+                // Populate the Upazila dropdown
+                upazilaDropdown.innerHTML = '<option value="">উপজেলা</option>';
+                filteredUpazilas.forEach((upazila) => {
+                  const option = document.createElement("option");
+                  option.value = upazila.name;
+                  option.textContent = upazila.name;
+                  upazilaDropdown.appendChild(option);
+                });
+                upazilaDropdown.style.display = "block";
+              }
+            });
+
+            upazilaDropdown.addEventListener("change", function () {
+              // Hide all other dropdowns
+              instituteDropdown.style.display = "none";
+
+              // Show the selected upazila's dropdown
+              const selectedUpazila = this.value;
+              if (selectedUpazila) {
+                // Filter institutes based on the selected upazila
+                const filteredInstitutes = data.institutes.filter(
+                  (institute) => institute.upazila === selectedUpazila
+                );
+
+                // Populate the Institute dropdown
+                instituteDropdown.innerHTML =
+                  '<option value="">প্রতিষ্ঠান সমূহ</option>';
+                filteredInstitutes.forEach((institute) => {
+                  const option = document.createElement("option");
+                  option.value = institute.link;
+                  option.textContent = institute.name;
+                  instituteDropdown.appendChild(option);
+                });
+                instituteDropdown.style.display = "block";
+              }
+            });
+
+            instituteDropdown.addEventListener("change", function () {
+              // Open the selected institute's link
+              const selectedLink = this.value;
+              if (selectedLink) {
+                window.location.href = selectedLink;
+              }
+            });
+          })
+          .catch((error) => console.error("Error loading JSON data:", error));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Select Box with Option Hover Style</title>
+    <style>
+      .custom-select {
+        position: relative;
+        width: 200px; /* Adjust the width as needed */
+      }
+
+      #my-select {
+        display: none; /* Hide the original select */
+      }
+
+      .custom-options {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+
+      .custom-option {
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      .custom-option:hover {
+        background-color: #f0f0f0; /* Change the background color on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="custom-select">
+      <select id="my-select">
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+        <!-- Add more options as needed -->
+      </select>
+      <div class="custom-options">
+        <div class="custom-option" data-value="option1">Option 1</div>
+        <div class="custom-option" data-value="option2">Option 2</div>
+        <div class="custom-option" data-value="option3">Option 3</div>
+        <!-- Add more custom options corresponding to your select options -->
+      </div>
+    </div>
+
+    <script>
+      const select = document.getElementById("my-select");
+      const customOptions = document.querySelectorAll(".custom-option");
+
+      // Display the custom options when the select box is clicked
+      select.addEventListener("click", function () {
+        const customOptionsContainer = this.nextElementSibling;
+        customOptionsContainer.style.display = "block";
+      });
+
+      // Close the custom options when clicking outside the select box
+      document.addEventListener("click", function (event) {
+        if (!select.contains(event.target)) {
+          const customOptionsContainers =
+            document.querySelectorAll(".custom-options");
+          customOptionsContainers.forEach(function (container) {
+            container.style.display = "none";
+          });
+        }
+      });
+
+      // Update the select value when a custom option is clicked
+      customOptions.forEach(function (customOption) {
+        customOption.addEventListener("click", function () {
+          const value = this.getAttribute("data-value");
+          select.value = value;
+          select.dispatchEvent(new Event("change"));
+          select.previousElementSibling.textContent = this.textContent;
+        });
+      });
+    </script>
+  </body>
+</html>
